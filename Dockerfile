@@ -27,7 +27,7 @@ RUN if [[ ${BUILD_HEVC_ENCODER} == 1 ]]; then curl -L https://bitbucket.org/mult
 
 # install libaom
 ARG BUILD_AV1_ENCODER
-RUN curl -L https://storage.googleapis.com/aom-releases/libaom-${LIBAOM_VERSION}.tar.gz | tar zx && \
+RUN if [[ ${BUILD_AV1_ENCODER} == 1 ]]; then curl -L https://storage.googleapis.com/aom-releases/libaom-${LIBAOM_VERSION}.tar.gz | tar zx && \
     cd libaom-${LIBAOM_VERSION} && cd build && cmake -DCONFIG_AV1_ENCODER=$BUILD_AV1_ENCODER -DBUILD_SHARED_LIBS=1 -DENABLE_TESTS=0 -DENABLE_DOCS=0 -DCMAKE_INSTALL_PREFIX=${PREFIX_PATH} -DCMAKE_INSTALL_LIBDIR=${PREFIX_PATH}/lib .. && make V=1 && make install
 
 # install libheif
@@ -67,4 +67,3 @@ ARG BUILD_AV1_ENCODER
 RUN BUILD_HEVC_ENCODER=${BUILD_HEVC_ENCODER} BUILD_AV1_ENCODER=${BUILD_AV1_ENCODER} node test.mjs
 
 # packaging
-RUN cd ${PREFIX_PATH} && zip -r /tmp/sharp-heif-lambda-layer.zip lib nodejs
